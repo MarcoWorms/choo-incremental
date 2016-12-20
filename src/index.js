@@ -4,27 +4,41 @@ var app = choo()
 
 app.model({
   state: {
-    gold: 0
+    eggs: 0,
+    money: 0,
   },
   reducers: {
-    increment: function (state) {
+    addEgg: function (state) {
       return {
-        gold: state.gold + 1
+        eggs: state.eggs + 1,
+      }
+    },
+    addMoney: function (state) {
+      return {
+        money: state.money + state.eggs/20,
       }
     }
+  },
+  subscriptions: {
+    makeMoney: (send, done) => {
+      setInterval(() => {
+        send('addMoney', (err) => err && done(err))
+      }, 100)
+    },
   }
 })
 
 function mainView (state, prev, send) {
   return html`
     <main>
-      <h3>Gold: ${state.gold}</h3>
-      <button onclick=${increment}>+</button>
+      <h3>Eggs: ${state.eggs}</h3>
+      <h3>Money: ${Math.floor(state.money)} (+${state.eggs/2}/s)</h3>
+      <button onclick=${addEgg}>+</button>
     </main>
   `
 
-  function increment () {
-    send('increment')
+  function addEgg () {
+    send('addEgg')
   }
 }
 
